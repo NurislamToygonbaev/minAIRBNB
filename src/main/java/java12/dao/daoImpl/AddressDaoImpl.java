@@ -17,7 +17,8 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
         Address findAddress = null;
         try {
             entityManager.getTransaction().begin();
-            findAddress = entityManager.createQuery("select a from Address a where id =:addressId", Address.class)
+            findAddress = entityManager.createQuery("select a from Address a where id =:addressId",
+                            Address.class)
                     .setParameter("addressId", addressId)
                     .getSingleResult();
             
@@ -52,7 +53,8 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            entityManager.createQuery("update Address set city =:city, region =:region, street =:street where id =:id", Address.class)
+            entityManager.createQuery("update Address set city =:city, region =:region," +
+                            " street =:street where id =:id", Address.class)
                             .setParameter("city", newAddress.getCity())
                             .setParameter("region", newAddress.getRegion())
                             .setParameter("street", newAddress.getStreet())
@@ -69,14 +71,18 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
     }
 
     @Override
-    public Optional<Address> findAddressWithAgency(Long addressId) {
+    public Map<Address, Agency> findAddressWithAgency() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        Address findAddress = null;
+        Map<Address, Agency> addresses = new HashMap<>();
         try {
             entityManager.getTransaction().begin();
-            findAddress = entityManager.createQuery("select a from Address a join a.agency where a.id =:addressId", Address.class)
-                    .setParameter("addressId", addressId)
-                    .getSingleResult();
+
+            List<Address> resultList = entityManager.createQuery(
+                    "select distinct a from Address a join fetch a.agency", Address.class)
+                    .getResultList();
+            for (Address address : resultList) {
+                addresses.put(address, address.getAgency());
+            }
 
             entityManager.getTransaction().commit();
         } catch (Exception e){
@@ -85,7 +91,7 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
         }finally {
             entityManager.close();
         }
-        return Optional.ofNullable(findAddress);
+        return addresses;
     }
 
     @Override
@@ -94,7 +100,8 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
         Integer findCity = 0;
         try {
             entityManager.getTransaction().begin();
-            findCity = entityManager.createQuery("select count(Agency.id) from Address a join a.agency where a.city =:city", Integer.class)
+            findCity = entityManager.createQuery("select count(a.id) from Agency a" +
+                            " where a.address.city =:city", Integer.class)
                     .setParameter("city", city)
                     .getSingleResult();
 
@@ -111,13 +118,17 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
     @Override
     public Map<String, List<Agency>> groupByRegion() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        Map<String, Object> regionGroupsBy = new HashMap<>();
-        Map<String, List<Agency>> listMap = new HashMap<>();
+        Map<String, List<Agency>> map = new HashMap<>();
         try {
             entityManager.getTransaction().begin();
-            regionGroupsBy = entityManager.createQuery("select a.region, ag from Address a join a.agency ag group by a.region", Map.class)
-                    .getHints();
+            List<Address> addresses = entityManager.createQuery("select a from Address a", Address.class)
+                    .getResultList();
+            for (Address address : addresses) {
+                String region = address.getRegion();
+                Agency agency = address.getAgency();
 
+                map.computeIfAbsent(region, k -> new ArrayList<>()).add(agency);
+            }
             entityManager.getTransaction().commit();
         }catch (Exception e){
             if (entityManager.getTransaction().isActive()) entityManager.getTransaction().rollback();
@@ -125,7 +136,7 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
         }finally {
             entityManager.close();
         }
-        return listMap;
+        return map;
     }
 
     @Override

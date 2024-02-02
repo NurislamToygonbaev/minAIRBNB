@@ -31,6 +31,6 @@ public class Customer extends BaseEntityId{
     private String nationality;
     @Column(name = "family_status", nullable = false)
     private FamilyStatus familyStatus;
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<RentInfo> rentInfo;
 }

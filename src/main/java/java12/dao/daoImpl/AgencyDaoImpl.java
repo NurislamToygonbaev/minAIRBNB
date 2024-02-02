@@ -39,7 +39,8 @@ public class AgencyDaoImpl implements AgencyDao, AutoCloseable {
         Agency findAgency = null;
         try {
             entityManager.getTransaction().begin();
-            findAgency = entityManager.createQuery("select a from Agency a where id =:agencyId", Agency.class)
+            findAgency = entityManager.createQuery("select a from Agency a " +
+                            " where id =:agencyId", Agency.class)
                     .setParameter("agencyId", agencyId)
                     .getSingleResult();
 

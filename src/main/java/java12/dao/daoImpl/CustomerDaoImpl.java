@@ -4,8 +4,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java12.config.DataBaseConnection;
 import java12.dao.CustomerDao;
+import java12.entities.Agency;
 import java12.entities.Customer;
+import java12.entities.House;
+import java12.entities.RentInfo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +32,22 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
         }
     }
     @Override
-    public String saveCustomerWithRent(Customer newCustomer){
-        return null;
+    public String saveCustomerWithRent(Customer newCustomer, RentInfo newRentInfo){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            newCustomer.getRentInfo().add(newRentInfo);
+            newRentInfo.setCustomer(newCustomer);
+            entityManager.persist(newCustomer);
+            entityManager.persist(newRentInfo);
+            entityManager.getTransaction().commit();
+            return newCustomer.getFirstName() + " Successfully saved!!!";
+        }catch (Exception e){
+            if (entityManager.getTransaction().isActive()) entityManager.getTransaction().rollback();
+            return "Failed: "+e.getMessage();
+        }finally {
+            entityManager.close();
+        }
     }
 
     @Override
@@ -38,7 +56,8 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
         Customer findCustomer = null;
         try {
             entityManager.getTransaction().begin();
-            findCustomer = entityManager.createQuery("select c from Customer c where id =:customerId", Customer.class)
+            findCustomer = entityManager.createQuery("select c from Customer c" +
+                            " where id =:customerId", Customer.class)
                     .setParameter("customerId", customerId)
                     .getSingleResult();
 
@@ -87,7 +106,6 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
                             .setParameter("familyStatus", newCustomer.getFamilyStatus())
                             .setParameter("customerId", customerId)
                                     .executeUpdate();
-
             entityManager.getTransaction().commit();
             return newCustomer.getFirstName() + " Successfully updated!!!";
         }catch (Exception e){
@@ -104,17 +122,76 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
         try {
             entityManager.getTransaction().begin();
             Customer findCustomer = entityManager.find(Customer.class, customerId);
-
+            List<RentInfo> rentInfo = findCustomer.getRentInfo();
+            if (!rentInfo.isEmpty()){
+                for (RentInfo info : rentInfo) {
+                    if (info.getCheckOut().isAfter(LocalDate.now())){
+                        return "Customer rent for the future "+info.getCheckOut();
+                    }
+                    info.setCustomer(null);
+                    info.setOwner(null);
+                    info.setAgency(null);
+                }
+            }
+            entityManager.remove(findCustomer);
             entityManager.getTransaction().commit();
+            return findCustomer.getFirstName() +" Successfully deleted!!!";
         }catch (Exception e){
             if (entityManager.getTransaction().isActive()) entityManager.getTransaction().rollback();
             return "Failed: "+e.getMessage();
         }
-        return null;
+    }
+
+    public String rentingHouseByCustomer(Long customerId, Long houseId, Long agencyId,
+                                         LocalDate checkIn, LocalDate checkout){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            Customer findCustomer = entityManager.find(Customer.class, customerId);
+            House findHouse = entityManager.find(House.class, houseId);
+            Agency findAgency = entityManager.find(Agency.class, agencyId);
+            boolean houseAble = checkHouseAble(entityManager, houseId, checkIn, checkout);
+            if (!houseAble){
+                return "There are no houses for the selected dates";
+            }
+            RentInfo rentInfo = new RentInfo();
+            rentInfo.setCustomer(findCustomer);
+            rentInfo.setHouse(findHouse);
+            rentInfo.setAgency(findAgency);
+            rentInfo.setCheckIn(checkIn);
+            rentInfo.setCheckOut(checkout);
+            findCustomer.getRentInfo().add(rentInfo);
+            findHouse.setRentInfo(rentInfo);
+            findAgency.getRentInfo().add(rentInfo);
+            entityManager.persist(rentInfo);
+            entityManager.getTransaction().commit();
+            return "House successfully rented by customer!";
+        }catch (Exception e){
+            if (entityManager.getTransaction().isActive()) entityManager.getTransaction().rollback();
+            return "Failed: "+e.getMessage();
+        }finally {
+            entityManager.close();
+        }
     }
 
     @Override
     public void close() throws Exception {
         entityManagerFactory.close();
+    }
+
+    private boolean checkHouseAble(EntityManager entityManager, Long houseId,
+                                   LocalDate checkIn, LocalDate checkout) {
+        String jpql = "select count(distinct r.house.id) from RentInfo r " +
+                "where r.house.id = :houseId " +
+                "and (:checkIn between r.checkIn and r.checkIn " +
+                "or :checkout between r.checkIn and r.checkOut)";
+
+        Long count = entityManager.createQuery(jpql, Long.class)
+                .setParameter("houseId", houseId)
+                .setParameter("checkIn", checkIn)
+                .setParameter("checkout", checkout)
+                .getSingleResult();
+
+        return count == 0;
     }
 }

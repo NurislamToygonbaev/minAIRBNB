@@ -11,7 +11,7 @@ public interface AddressDao {
     Optional<Address> findAddressById(Long addressId);
     List<Address> findAllAddresses();
     String updateAddressById(Long addressId, Address newAddress);
-    Optional<Address> findAddressWithAgency(Long addressId);
+    Map<Address, Agency>  findAddressWithAgency();
     Integer countAgenciesInTheCity(String city);
     Map<String, List<Agency>> groupByRegion();
 }

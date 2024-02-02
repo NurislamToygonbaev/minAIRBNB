@@ -21,4 +21,6 @@ public class Address extends BaseEntityId {
     private String street;
     @OneToOne
     private Agency agency;
+    @OneToOne
+    private House house;
 }

@@ -27,7 +27,7 @@ public class House extends BaseEntityId{
     private boolean furniture;
     @OneToOne
     private Address address;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private RentInfo rentInfo;
     @ManyToOne
     private Owner owner;
