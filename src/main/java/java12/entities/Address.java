@@ -19,6 +19,6 @@ public class Address extends BaseEntityId {
     private String region;
     @Column(nullable = false)
     private String street;
-    @OneToOne(mappedBy = "address")
+    @OneToOne
     private Agency agency;
 }
