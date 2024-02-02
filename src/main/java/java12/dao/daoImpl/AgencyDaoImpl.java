@@ -2,7 +2,6 @@ package java12.dao.daoImpl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.NoResultException;
 import java12.config.DataBaseConnection;
 import java12.dao.AgencyDao;
 import java12.entities.Address;
@@ -55,7 +54,7 @@ public class AgencyDaoImpl implements AgencyDao, AutoCloseable {
     }
 
     @Override
-    public List<Agency> FindAllAgencies() {
+    public List<Agency> findAllAgencies() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<Agency> agencies = new ArrayList<>();
         try {
@@ -78,9 +77,6 @@ public class AgencyDaoImpl implements AgencyDao, AutoCloseable {
         try {
             entityManager.getTransaction().begin();
             Agency findAgency = entityManager.find(Agency.class, agencyId);
-            if (findAgency == null) {
-                return "Agency with ID " + agencyId + " not found!!!";
-            }
             findAgency.setName(newAgency.getName());
             findAgency.setPhoneNumber(newAgency.getPhoneNumber());
             entityManager.getTransaction().commit();
@@ -99,9 +95,6 @@ public class AgencyDaoImpl implements AgencyDao, AutoCloseable {
         try {
             entityManager.getTransaction().begin();
             Agency findAgency = entityManager.find(Agency.class, agencyId);
-            if (findAgency == null) {
-                return "Agency with ID " + agencyId + " not found.";
-            }
 
             for (RentInfo rentInfo : findAgency.getRentInfo()) {
                 rentInfo.setOwner(null);

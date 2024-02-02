@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface AddressDao {
     Optional<Address> findAddressById(Long addressId);
+    List<Address> findAllAddresses();
     String updateAddressById(Long addressId, Address newAddress);
     Optional<Address> findAddressWithAgency(Long addressId);
     Integer countAgenciesInTheCity(String city);
