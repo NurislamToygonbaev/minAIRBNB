@@ -50,9 +50,14 @@ public class AgencyServiceImpl implements AgencyService {
     @Override
     public String updateAgencyById(Long agencyId, Agency newAgency) {
         Agency findAgency = findAgencyById(agencyId);
-        if (findAgency != null){
+        if (findAgency == null) {
+            return "failed to update!!!";
+        }
+        if (newAgency.getPhoneNumber().startsWith("+996") && newAgency.getPhoneNumber().length() == 13) {
             return agencyDao.updateAgencyById(agencyId, newAgency);
-        }else return "failed to update!!!";
+        }else {
+            return "Incorrect phone number!";
+        }
     }
 
     @Override

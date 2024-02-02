@@ -9,8 +9,9 @@ import java.util.Optional;
 
 public interface AddressService {
     Address findAddressById(Long addressId);
+    List<Address> findAllAddresses();
     String updateAddressById(Long addressId, Address newAddress);
-    Address findAddressWithAgency(Long addressId);
+    Map<Address, Agency> findAddressWithAgency();
     Integer countAgenciesInTheCity(String city);
     Map<String, List<Agency>> groupByRegion();
 }

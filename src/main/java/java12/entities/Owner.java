@@ -30,7 +30,7 @@ public class Owner extends BaseEntityId{
     private Gender gender;
     @OneToMany(mappedBy = "owner")
     private List<RentInfo> rentInfo;
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<House> houses;
     @ManyToMany(mappedBy = "owners")
     private List<Agency> agencies;

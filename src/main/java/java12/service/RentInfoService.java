@@ -7,6 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface RentInfoService {
-    List<RentInfo> rentInfoBetweenDates(LocalDate fromDate, LocalDate toDate);
-    List<House> housesByAgencyIdAndDate(Long agencyId, LocalDate currentDate);
+    List<House> rentInfoBetweenDates(LocalDate fromDate, LocalDate toDate);
+    Integer housesByAgencyIdAndDate(Long agencyId);
 }

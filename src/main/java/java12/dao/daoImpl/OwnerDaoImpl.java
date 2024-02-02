@@ -7,7 +7,9 @@ import java12.dao.OwnerDao;
 import java12.entities.Agency;
 import java12.entities.House;
 import java12.entities.Owner;
+import java12.entities.RentInfo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -117,7 +119,29 @@ public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
 
     @Override
     public String deleteOwnerById(Long ownerId) {
-        return null;
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            Owner findOwner = entityManager.find(Owner.class, ownerId);
+            List<RentInfo> rentInfo = findOwner.getRentInfo();
+            if (!rentInfo.isEmpty()){
+                for (RentInfo info : rentInfo) {
+                    if (info.getCheckOut().isAfter(LocalDate.now())) {
+                        return "cannot be deleted . A client lives in the owner's house";
+                    }
+                    info.setCustomer(null);
+                    info.setAgency(null);
+                }
+            }
+            entityManager.remove(findOwner);
+            entityManager.getTransaction().commit();
+            return findOwner.getFirstName()+" Successfully deleted";
+        } catch (Exception e) {
+            if (entityManager.getTransaction().isActive()) entityManager.getTransaction().rollback();
+            return "Failed: " + e.getMessage();
+        } finally {
+            entityManager.close();
+        }
     }
 
     @Override
@@ -145,7 +169,8 @@ public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
         List<Owner> owners = new ArrayList<>();
         try {
             entityManager.getTransaction().begin();
-            owners = entityManager.createQuery("select o from Owner o join o.agencies a where a.id =:agencyId", Owner.class)
+            owners = entityManager.createQuery("select o from Owner o join o.agencies a" +
+                            " where a.id =:agencyId", Owner.class)
                     .setParameter("agencyId", agencyId)
                     .getResultList();
             entityManager.getTransaction().commit();
@@ -164,7 +189,9 @@ public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
         List<Owner> owners = new ArrayList<>();
         try {
             entityManager.getTransaction().begin();
-            owners = entityManager.createQuery("select o.firstName as first_name, function('year', current_date()) - function('year', o.dateOfBirth) as age from Owner o", Owner.class)
+            owners = entityManager.createQuery("select o.firstName as first_name," +
+                            " function('year', current_date()) - function('year', o.dateOfBirth) as age" +
+                            " from Owner o", Owner.class)
                     .getResultList();
             entityManager.getTransaction().commit();
         } catch (Exception e) {
