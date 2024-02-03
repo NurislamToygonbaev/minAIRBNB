@@ -43,7 +43,7 @@ public class AgencyServiceImpl implements AgencyService {
     }
 
     @Override
-    public List<Agency> FindAllAgencies() {
+    public List<Agency> findAllAgencies() {
         return agencyDao.findAllAgencies();
     }
 

@@ -80,18 +80,13 @@ public class HouseDaoImpl implements HouseDao, AutoCloseable {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            entityManager.createQuery("""
-                            update House set houseType =:houseType, price =:price, rating =:rating,
-                            description =:description, room =:room, furniture =:furniture where id =:houseId""")
-                    .setParameter("houseType", newHouse.getHouseType())
-                    .setParameter("price", newHouse.getPrice())
-                    .setParameter("rating", newHouse.getRating())
-                    .setParameter("description", newHouse.getDescription())
-                    .setParameter("room", newHouse.getRoom())
-                    .setParameter("furniture", newHouse.isFurniture())
-                    .setParameter("houseId", houseId)
-                    .executeUpdate();
-
+            House findHouse = entityManager.find(House.class, houseId);
+            findHouse.setHouseType(newHouse.getHouseType());
+            findHouse.setPrice(newHouse.getPrice());
+            findHouse.setRating(newHouse.getRating());
+            findHouse.setDescription(newHouse.getDescription());
+            findHouse.setRoom(newHouse.getRoom());
+            findHouse.setFurniture(newHouse.isFurniture());
             entityManager.getTransaction().commit();
             return newHouse.getHouseType() + " Successfully updated!!!";
         } catch (Exception e) {

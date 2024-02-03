@@ -14,7 +14,6 @@ import java.util.List;
 @Entity
 @Table(name = "customers")
 @Getter @Setter
-@ToString
 @NoArgsConstructor
 @SequenceGenerator(name = "base_gen_id", sequenceName = "customer_seq", allocationSize = 1)
 public class Customer extends BaseEntityId{
@@ -33,4 +32,28 @@ public class Customer extends BaseEntityId{
     private FamilyStatus familyStatus;
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<RentInfo> rentInfo;
+
+    public Customer(String firstName, String lastName, String email, LocalDate dateOfBirth,
+                    Gender gender, String nationality, FamilyStatus familyStatus) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.nationality = nationality;
+        this.familyStatus = familyStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", gender=" + gender +
+                ", nationality='" + nationality + '\'' +
+                ", familyStatus=" + familyStatus +
+                '}';
+    }
 }

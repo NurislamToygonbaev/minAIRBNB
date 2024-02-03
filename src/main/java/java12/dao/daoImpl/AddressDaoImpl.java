@@ -53,13 +53,10 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            entityManager.createQuery("update Address set city =:city, region =:region," +
-                            " street =:street where id =:id", Address.class)
-                            .setParameter("city", newAddress.getCity())
-                            .setParameter("region", newAddress.getRegion())
-                            .setParameter("street", newAddress.getStreet())
-                            .setParameter("id", addressId)
-                                    .executeUpdate();
+            Address findAddress = entityManager.find(Address.class, addressId);
+            findAddress.setCity(newAddress.getCity());
+            findAddress.setRegion(newAddress.getRegion());
+            findAddress.setStreet(newAddress.getStreet());
             entityManager.getTransaction().commit();
             return newAddress.getCity() + " Successfully saved!!!";
         }catch (Exception e){
@@ -123,11 +120,10 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
             entityManager.getTransaction().begin();
             List<Address> addresses = entityManager.createQuery("select a from Address a", Address.class)
                     .getResultList();
+            List<Agency> agencies = new ArrayList<>();
             for (Address address : addresses) {
-                String region = address.getRegion();
-                Agency agency = address.getAgency();
-
-                map.computeIfAbsent(region, k -> new ArrayList<>()).add(agency);
+                agencies.add(address.getAgency());
+                map.put(address.getRegion(), agencies);
             }
             entityManager.getTransaction().commit();
         }catch (Exception e){

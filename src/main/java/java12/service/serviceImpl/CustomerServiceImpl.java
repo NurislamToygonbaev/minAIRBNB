@@ -28,14 +28,16 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public String saveCustomerWithRent(Customer newCustomer, RentInfo newRentInfo) {
-        if (newRentInfo.getCheckIn().isAfter(LocalDate.now())){
+    public String saveCustomerWithRent(Customer newCustomer, Long houseId, Long agencyId,
+                                       LocalDate checkIn, LocalDate checkout) {
+        if (checkIn.isAfter(LocalDate.now())){
             return "Check-in date cannot be in the future";
         }
         if (checkEmail(newCustomer) == 1){
             return newCustomer.getEmail() +" already exist!!!";
         }
-        return customerDao.saveCustomerWithRent(newCustomer, newRentInfo);
+        return customerDao.saveCustomerWithRent(newCustomer, houseId, agencyId,
+                checkIn, checkout);
     }
 
     @Override

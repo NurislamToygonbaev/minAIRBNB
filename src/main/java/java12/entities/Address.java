@@ -9,7 +9,6 @@ import lombok.ToString;
 @Entity
 @Table(name = "addresses")
 @Getter @Setter
-@ToString
 @NoArgsConstructor
 @SequenceGenerator(name = "base_gen_id", sequenceName = "address_seq", allocationSize = 1)
 public class Address extends BaseEntityId {
@@ -19,8 +18,23 @@ public class Address extends BaseEntityId {
     private String region;
     @Column(nullable = false)
     private String street;
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST})
     private Agency agency;
     @OneToOne
     private House house;
+
+    public Address(String city, String region, String street) {
+        this.city = city;
+        this.region = region;
+        this.street = street;
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "city='" + city + '\'' +
+                ", region='" + region + '\'' +
+                ", street='" + street + '\'' +
+                '}';
+    }
 }

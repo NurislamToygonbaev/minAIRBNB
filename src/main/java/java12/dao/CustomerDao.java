@@ -9,7 +9,8 @@ import java.util.Optional;
 
 public interface CustomerDao {
     String saveCustomer(Customer newCustomer);
-    String saveCustomerWithRent(Customer newCustomer, RentInfo newRentInfo);
+    String saveCustomerWithRent(Customer newCustomer, Long houseId, Long agencyId,
+                                LocalDate checkIn, LocalDate checkout);
     Optional<Customer> findCustomerById(Long customerId);
     List<Customer> findAllCustomers();
     String updateCustomerById(Long customerId, Customer newCustomer);

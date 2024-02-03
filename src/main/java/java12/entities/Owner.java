@@ -12,9 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "owners")
-@Getter
-@Setter
-@ToString
+@Getter @Setter
 @NoArgsConstructor
 @SequenceGenerator(name = "base_gen_id", sequenceName = "owner_seq", allocationSize = 1)
 public class Owner extends BaseEntityId{
@@ -34,4 +32,23 @@ public class Owner extends BaseEntityId{
     private List<House> houses;
     @ManyToMany(mappedBy = "owners")
     private List<Agency> agencies;
+
+    public Owner(String firstName, String lastName, String email, LocalDate dateOfBirth, Gender gender) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+    }
+
+    @Override
+    public String toString() {
+        return "Owner{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", gender=" + gender +
+                '}';
+    }
 }

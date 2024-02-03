@@ -14,7 +14,6 @@ import static jakarta.persistence.CascadeType.*;
 @Table(name = "agencies")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @SequenceGenerator(name = "base_gen_id", sequenceName = "agencies_seq", allocationSize = 1)
 public class Agency extends BaseEntityId{
@@ -22,10 +21,23 @@ public class Agency extends BaseEntityId{
     private String name;
     @Column(name = "phone_number", length = 13)
     private String phoneNumber;
-    @OneToOne(cascade = {REMOVE}, orphanRemoval = true)
+    @OneToOne(mappedBy = "agency", cascade = {REMOVE, PERSIST}, orphanRemoval = true)
     private Address address;
     @OneToMany(cascade = {REMOVE}, orphanRemoval = true)
     private List<RentInfo> rentInfo;
     @ManyToMany
     private List<Owner> owners;
+
+    public Agency(String name, String phoneNumber) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Agency{" +
+                "name='" + name + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
 }

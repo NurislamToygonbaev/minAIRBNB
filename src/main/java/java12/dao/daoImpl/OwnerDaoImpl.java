@@ -96,17 +96,12 @@ public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            entityManager.createQuery("""
-                            update Customer set firstName =:firstName, lastName =:lastName, email =:email,
-                            dateOfBirth =:dateOfBirth, gender =:gender where id =:ownerId""")
-                    .setParameter("firstName", newOwner.getFirstName())
-                    .setParameter("lastName", newOwner.getLastName())
-                    .setParameter("email", newOwner.getEmail())
-                    .setParameter("dateOfBirth", newOwner.getDateOfBirth())
-                    .setParameter("gender", newOwner.getGender())
-                    .setParameter("ownerId", ownerId)
-                    .executeUpdate();
-
+            Owner findOwner = entityManager.find(Owner.class, ownerId);
+            findOwner.setFirstName(newOwner.getFirstName());
+            findOwner.setLastName(newOwner.getLastName());
+            findOwner.setEmail(newOwner.getEmail());
+            findOwner.setDateOfBirth(newOwner.getDateOfBirth());
+            findOwner.setGender(newOwner.getGender());
             entityManager.getTransaction().commit();
             return newOwner.getFirstName() + " Successfully updated!!!";
         } catch (Exception e) {

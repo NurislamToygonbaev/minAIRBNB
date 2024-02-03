@@ -32,14 +32,27 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
         }
     }
     @Override
-    public String saveCustomerWithRent(Customer newCustomer, RentInfo newRentInfo){
+    public String saveCustomerWithRent(Customer newCustomer,Long houseId, Long agencyId,
+                                       LocalDate checkIn, LocalDate checkout){
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            newCustomer.getRentInfo().add(newRentInfo);
-            newRentInfo.setCustomer(newCustomer);
+            Agency findAgency = entityManager.find(Agency.class, agencyId);
+            House findHouse = entityManager.find(House.class, houseId);
+            if (!checkHouseAble(entityManager, houseId, checkIn, checkout)){
+                return "There are no houses for the selected dates";
+            }
+            RentInfo rentInfo = new RentInfo();
+            rentInfo.setCustomer(newCustomer);
+            rentInfo.setHouse(findHouse);
+            rentInfo.setAgency(findAgency);
+            rentInfo.setCheckIn(checkIn);
+            rentInfo.setCheckOut(checkout);
+            findHouse.setRentInfo(rentInfo);
+            findAgency.getRentInfo().add(rentInfo);
+            newCustomer.getRentInfo().add(rentInfo);
+            entityManager.persist(rentInfo);
             entityManager.persist(newCustomer);
-            entityManager.persist(newRentInfo);
             entityManager.getTransaction().commit();
             return newCustomer.getFirstName() + " Successfully saved!!!";
         }catch (Exception e){
@@ -93,19 +106,14 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            entityManager.createQuery("""
-            update Customer set firstName =:firstName, lastName =:lastName, email =:email,
-            dateOfBirth =:dateOfBirth, gender =:gender, nationality =:nationality,
-            familyStatus =:familyStatus where id =:customerId""")
-                            .setParameter("firstName", newCustomer.getFirstName())
-                            .setParameter("lastName", newCustomer.getLastName())
-                            .setParameter("email", newCustomer.getEmail())
-                            .setParameter("dateOfBirth", newCustomer.getDateOfBirth())
-                            .setParameter("gender", newCustomer.getGender())
-                            .setParameter("nationality", newCustomer.getNationality())
-                            .setParameter("familyStatus", newCustomer.getFamilyStatus())
-                            .setParameter("customerId", customerId)
-                                    .executeUpdate();
+            Customer findCustomer = entityManager.find(Customer.class, customerId);
+            findCustomer.setFirstName(newCustomer.getFirstName());
+            findCustomer.setLastName(newCustomer.getLastName());
+            findCustomer.setEmail(newCustomer.getEmail());
+            findCustomer.setDateOfBirth(newCustomer.getDateOfBirth());
+            findCustomer.setGender(newCustomer.getGender());
+            findCustomer.setNationality(newCustomer.getNationality());
+            findCustomer.setFamilyStatus(newCustomer.getFamilyStatus());
             entityManager.getTransaction().commit();
             return newCustomer.getFirstName() + " Successfully updated!!!";
         }catch (Exception e){
