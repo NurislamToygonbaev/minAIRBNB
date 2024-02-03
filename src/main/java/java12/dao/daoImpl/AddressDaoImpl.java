@@ -58,7 +58,7 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
             findAddress.setRegion(newAddress.getRegion());
             findAddress.setStreet(newAddress.getStreet());
             entityManager.getTransaction().commit();
-            return newAddress.getCity() + " Successfully saved!!!";
+            return newAddress.getCity() + " Successfully updated!!!";
         }catch (Exception e){
             if (entityManager.getTransaction().isActive()) entityManager.getTransaction().rollback();
             return "Failed: "+e.getMessage();
@@ -75,7 +75,7 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
             entityManager.getTransaction().begin();
 
             List<Address> resultList = entityManager.createQuery(
-                    "select distinct a from Address a join fetch a.agency", Address.class)
+                    "select distinct a from Address a join a.agency", Address.class)
                     .getResultList();
             for (Address address : resultList) {
                 addresses.put(address, address.getAgency());
@@ -92,13 +92,13 @@ public class AddressDaoImpl implements AddressDao, AutoCloseable{
     }
 
     @Override
-    public Integer countAgenciesInTheCity(String city) {
+    public Long countAgenciesInTheCity(String city) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        Integer findCity = 0;
+        Long findCity = 0L;
         try {
             entityManager.getTransaction().begin();
             findCity = entityManager.createQuery("select count(a.id) from Agency a" +
-                            " where a.address.city =:city", Integer.class)
+                            " where a.address.city =:city", Long.class)
                     .setParameter("city", city)
                     .getSingleResult();
 

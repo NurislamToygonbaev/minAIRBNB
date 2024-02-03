@@ -30,8 +30,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public String saveCustomerWithRent(Customer newCustomer, Long houseId, Long agencyId,
                                        LocalDate checkIn, LocalDate checkout) {
-        if (checkIn.isAfter(LocalDate.now())){
-            return "Check-in date cannot be in the future";
+        if (checkIn.isBefore(LocalDate.now())){
+            return "Check-in date cannot be in the last time";
         }
         if (checkEmail(newCustomer) == 1){
             return newCustomer.getEmail() +" already exist!!!";
@@ -82,8 +82,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public String rentingHouseByCustomer(Long customerId, Long houseId, Long agencyId,
                                          LocalDate checkIn, LocalDate checkout) {
-        if (checkIn.isAfter(LocalDate.now())){
-            return "Check-in date cannot be in the future";
+        if (checkIn.isBefore(LocalDate.now())){
+            return "Check-in date cannot be in the last time";
         }
         House findHouse = houseDao.findHouseById(houseId)
                 .orElse(null);

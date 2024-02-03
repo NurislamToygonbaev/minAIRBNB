@@ -48,11 +48,19 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
             rentInfo.setAgency(findAgency);
             rentInfo.setCheckIn(checkIn);
             rentInfo.setCheckOut(checkout);
+
             findHouse.setRentInfo(rentInfo);
             findAgency.getRentInfo().add(rentInfo);
-            newCustomer.getRentInfo().add(rentInfo);
             entityManager.persist(rentInfo);
             entityManager.persist(newCustomer);
+
+            if (newCustomer.getRentInfo() == null) {
+                newCustomer.setRentInfo(new ArrayList<>());
+            }
+            newCustomer.getRentInfo().add(rentInfo);
+
+            entityManager.persist(newCustomer);
+            entityManager.persist(rentInfo);
             entityManager.getTransaction().commit();
             return newCustomer.getFirstName() + " Successfully saved!!!";
         }catch (Exception e){
@@ -168,6 +176,10 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
             rentInfo.setAgency(findAgency);
             rentInfo.setCheckIn(checkIn);
             rentInfo.setCheckOut(checkout);
+
+            if (findCustomer.getRentInfo() == null) {
+                findCustomer.setRentInfo(new ArrayList<>());
+            }
             findCustomer.getRentInfo().add(rentInfo);
             findHouse.setRentInfo(rentInfo);
             findAgency.getRentInfo().add(rentInfo);

@@ -12,6 +12,6 @@ public interface AddressService {
     List<Address> findAllAddresses();
     String updateAddressById(Long addressId, Address newAddress);
     Map<Address, Agency> findAddressWithAgency();
-    Integer countAgenciesInTheCity(String city);
+    Long countAgenciesInTheCity(String city);
     Map<String, List<Agency>> groupByRegion();
 }

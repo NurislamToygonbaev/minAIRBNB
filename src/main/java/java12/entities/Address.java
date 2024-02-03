@@ -18,7 +18,7 @@ public class Address extends BaseEntityId {
     private String region;
     @Column(nullable = false)
     private String street;
-    @OneToOne(cascade = {CascadeType.PERSIST})
+    @OneToOne()
     private Agency agency;
     @OneToOne
     private House house;

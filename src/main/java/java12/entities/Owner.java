@@ -24,7 +24,7 @@ public class Owner extends BaseEntityId{
     private String email;
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
     @OneToMany(mappedBy = "owner")
     private List<RentInfo> rentInfo;

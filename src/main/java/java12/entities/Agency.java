@@ -21,7 +21,7 @@ public class Agency extends BaseEntityId{
     private String name;
     @Column(name = "phone_number", length = 13)
     private String phoneNumber;
-    @OneToOne(mappedBy = "agency", cascade = {REMOVE, PERSIST}, orphanRemoval = true)
+    @OneToOne(mappedBy = "agency", cascade = {REMOVE}, orphanRemoval = true)
     private Address address;
     @OneToMany(cascade = {REMOVE}, orphanRemoval = true)
     private List<RentInfo> rentInfo;

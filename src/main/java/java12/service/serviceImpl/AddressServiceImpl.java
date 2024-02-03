@@ -50,7 +50,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Integer countAgenciesInTheCity(String city) {
+    public Long countAgenciesInTheCity(String city) {
         List<Address> allAddresses = findAllAddresses();
         for (Address allAddress : allAddresses) {
             if (!allAddress.getCity().equalsIgnoreCase(city)){

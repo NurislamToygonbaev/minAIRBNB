@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @SequenceGenerator(name = "base_gen_id", sequenceName = "houses_seq", allocationSize = 1)
 public class House extends BaseEntityId{
+    @Enumerated(EnumType.STRING)
     @Column(name = "house_type")
     private HouseType houseType;
     private BigDecimal price;

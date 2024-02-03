@@ -25,9 +25,10 @@ public class Customer extends BaseEntityId{
     private String email;
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
     private String nationality;
+    @Enumerated(EnumType.STRING)
     @Column(name = "family_status", nullable = false)
     private FamilyStatus familyStatus;
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)

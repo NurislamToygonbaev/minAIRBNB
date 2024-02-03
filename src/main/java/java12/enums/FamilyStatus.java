@@ -1,5 +1,8 @@
 package java12.enums;
 
-public enum FamilyStatus {
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
+public enum FamilyStatus {
+    SINGLE, MARRIED;
 }

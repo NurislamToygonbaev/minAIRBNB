@@ -17,8 +17,6 @@ public class DataBaseConnection {
         properties.put(Environment.HBM2DDL_AUTO, "update");
         properties.put(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
         properties.put(Environment.SHOW_SQL, "true");
-        properties.put(Environment.FORMAT_SQL, "true");
-
         Configuration configuration = new Configuration();
         configuration.addProperties(properties);
         configuration.addAnnotatedClass(Address.class);
