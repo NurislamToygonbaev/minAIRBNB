@@ -63,6 +63,7 @@ public class App {
 //                "aaaa", "zzz", "aa@gmail.com", LocalDate.of(2002,2,5),
 //                Gender.MALE, "KG", FamilyStatus.SINGLE
 //        )));
+//        System.out.println(customerService.deleteCustomerById(1L));
 //        System.out.println(customerService.rentingHouseByCustomer(1L, 2L, 1L,
 //                LocalDate.of(2024, 8, 25),
 //                LocalDate.of(2024, 9, 2)));
@@ -81,13 +82,14 @@ public class App {
 //                HouseType.APARTMENT, BigDecimal.valueOf(500000), 2,
 //                "pppp", 8, true
 //        )));
+//        System.out.println(houseService.deleteHouseById(1L));
 //        System.out.println(houseService.getHousesInRegion("chuy"));
 //        System.out.println(houseService.allHousesByAgencyId(1L));
 //        System.out.println(houseService.allHousesByOwnerId(1L));
 //        System.out.println(houseService.housesBetweenDates(LocalDate.of(2025, 1, 1),
 //                LocalDate.of(2026, 1, 1)));
 
-        OwnerService ownerService = new OwnerServiceImpl();
+//        OwnerService ownerService = new OwnerServiceImpl();
 //        System.out.println(ownerService.saveOwner(new Owner(
 //                "owner", "ovich", "o@gmailcom", LocalDate.of(2000,1,1),
 //                Gender.MALE
@@ -99,6 +101,7 @@ public class App {
 //                HouseType.VIP, BigDecimal.valueOf(10), 5.6, "pokoijkijn", 3,
 //                true
 //        )));
+//        System.out.println(ownerService.deleteOwnerById(1L));
 //        System.out.println(ownerService.findOwnerById(1L));
 //        System.out.println(ownerService.findAllOwners());
 //        System.out.println(ownerService.updateOwnerById(1L, new Owner(
@@ -112,11 +115,11 @@ public class App {
 //        System.out.println(ownerService.getOwnerOnlyNameAndAge());
 
 
-        RentInfoService rentInfoService = new RentInfoServiceImpl();
+//        RentInfoService rentInfoService = new RentInfoServiceImpl();
 //        System.out.println(rentInfoService.housesByAgencyIdAndDate(10L));
 
-        System.out.println(rentInfoService.rentInfoBetweenDates(LocalDate.of(2024, 3, 2),
-                LocalDate.of(2024, 4, 1)));
+//        System.out.println(rentInfoService.rentInfoBetweenDates(LocalDate.of(2024, 3, 2),
+//                LocalDate.of(2024, 4, 1)));
 
     }
 

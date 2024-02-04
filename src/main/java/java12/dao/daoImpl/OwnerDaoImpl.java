@@ -4,10 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java12.config.DataBaseConnection;
 import java12.dao.OwnerDao;
-import java12.entities.Agency;
-import java12.entities.House;
-import java12.entities.Owner;
-import java12.entities.RentInfo;
+import java12.entities.*;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -120,11 +117,18 @@ public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
             if (!rentInfo.isEmpty()){
                 for (RentInfo info : rentInfo) {
                     if (info.getCheckOut().isAfter(LocalDate.now())) {
-                        return "cannot be deleted . A client lives in the owner's house";
+                        return "cannot delete owner. his house is rented";
                     }
-                    info.setCustomer(null);
-                    info.setAgency(null);
+                    Agency agency = info.getAgency();
+                    agency.getRentInfo().remove(info);
+                    Customer customer = info.getCustomer();
+                    customer.getRentInfo().remove(info);
+                    entityManager.remove(info);
                 }
+            }
+            List<Agency> findAgency = findOwner.getAgencies();
+            for (Agency agency : findAgency) {
+                agency.getOwners().remove(findOwner);
             }
             entityManager.remove(findOwner);
             entityManager.getTransaction().commit();

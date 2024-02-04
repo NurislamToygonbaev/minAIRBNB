@@ -4,10 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java12.config.DataBaseConnection;
 import java12.dao.HouseDao;
-import java12.entities.Address;
-import java12.entities.House;
-import java12.entities.Owner;
-import java12.entities.RentInfo;
+import java12.entities.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -103,17 +100,23 @@ public class HouseDaoImpl implements HouseDao, AutoCloseable {
         try {
             entityManager.getTransaction().begin();
             House finsHouse = entityManager.find(House.class, houseId);
-            Address address = finsHouse.getAddress();
-            address.setAgency(null);
             RentInfo rentInfo = finsHouse.getRentInfo();
             if (rentInfo.getCheckIn() != null) {
                 if (rentInfo.getCheckOut().isAfter(LocalDate.now())) {
                     return "cannot be deleted . A client lives in the house";
                 }
-                rentInfo.setAgency(null);
-                rentInfo.setCustomer(null);
-                rentInfo.setOwner(null);
+                Owner owner = rentInfo.getOwner();
+                owner.getRentInfo().remove(rentInfo);
+                Agency agencyForDelete = rentInfo.getAgency();
+                agencyForDelete.getRentInfo().remove(rentInfo);
+                Customer infoCustomer = rentInfo.getCustomer();
+                infoCustomer.getRentInfo().remove(rentInfo);
             }
+            Address address = finsHouse.getAddress();
+            Agency agency = address.getAgency();
+            agency.setAddress(null);
+            Owner houseOwner = finsHouse.getOwner();
+            houseOwner.getHouses().remove(finsHouse);
             entityManager.remove(finsHouse);
             entityManager.getTransaction().commit();
             return finsHouse.getHouseType() + " Successfully deleted";

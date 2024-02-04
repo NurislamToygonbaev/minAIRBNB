@@ -4,10 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java12.config.DataBaseConnection;
 import java12.dao.CustomerDao;
-import java12.entities.Agency;
-import java12.entities.Customer;
-import java12.entities.House;
-import java12.entities.RentInfo;
+import java12.entities.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -131,7 +128,6 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
             entityManager.close();
         }
     }
-
     @Override
     public String deleteCustomerById(Long customerId) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -141,23 +137,28 @@ public class CustomerDaoImpl implements CustomerDao, AutoCloseable {
             List<RentInfo> rentInfo = findCustomer.getRentInfo();
             if (!rentInfo.isEmpty()){
                 for (RentInfo info : rentInfo) {
-                    if (info.getCheckOut().isAfter(LocalDate.now())){
-                        return "Customer rent for the future "+info.getCheckOut();
+                    if (info.getCheckOut().isAfter(LocalDate.now())) {
+                        return "Customer has active rent houses. Can't delete.";
                     }
-                    info.setCustomer(null);
-                    info.setOwner(null);
-                    info.setAgency(null);
+                    House house = info.getHouse();
+                    house.setRentInfo(null);
+                    Owner owner = info.getOwner();
+                    owner.getRentInfo().remove(info);
+                    Agency agency = info.getAgency();
+                    agency.getRentInfo().remove(info);
+                    entityManager.remove(info);
                 }
             }
             entityManager.remove(findCustomer);
             entityManager.getTransaction().commit();
-            return findCustomer.getFirstName() +" Successfully deleted!!!";
-        }catch (Exception e){
+            return findCustomer.getFirstName() + " successfully deleted!";
+        } catch (Exception e) {
             if (entityManager.getTransaction().isActive()) entityManager.getTransaction().rollback();
-            return "Failed: "+e.getMessage();
+            return "Failed: " + e.getMessage();
+        } finally {
+            entityManager.close();
         }
     }
-
     public String rentingHouseByCustomer(Long customerId, Long houseId, Long agencyId,
                                          LocalDate checkIn, LocalDate checkout){
         EntityManager entityManager = entityManagerFactory.createEntityManager();
