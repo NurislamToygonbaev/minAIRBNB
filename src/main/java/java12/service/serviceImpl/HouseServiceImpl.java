@@ -20,13 +20,14 @@ public class HouseServiceImpl implements HouseService {
     private final OwnerDao ownerDao = new OwnerDaoImpl();
     private final AddressDao addressDao = new AddressDaoImpl();
     private final AgencyDao agencyDao = new AgencyDaoImpl();
+
     @Override
     public String saveHouse(Long ownerId, House newHouse) {
         try {
             ownerDao.findOwnerById(ownerId)
                     .orElseThrow(() ->
-                            new RuntimeException("Owner with id: "+ownerId+" not found!!!"));
-        }catch (RuntimeException e){
+                            new RuntimeException("Owner with id: " + ownerId + " not found!!!"));
+        } catch (RuntimeException e) {
             return e.getMessage();
         }
         return houseDao.saveHouse(ownerId, newHouse);
@@ -39,7 +40,7 @@ public class HouseServiceImpl implements HouseService {
             house = houseDao.findHouseById(houseId)
                     .orElseThrow(() ->
                             new RuntimeException("House with id: " + houseId + " not found!!!"));
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
         return house;
@@ -53,8 +54,8 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public String updateHouseById(Long houseId, House newHouse) {
         House findHouse = findHouseById(houseId);
-        if (findHouse == null){
-             return "Failed to update";
+        if (findHouse == null) {
+            return "Failed to update";
         }
         return houseDao.updateHouseById(houseId, newHouse);
     }
@@ -62,7 +63,7 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public String deleteHouseById(Long houseId) {
         House findHouse = findHouseById(houseId);
-        if (findHouse == null){
+        if (findHouse == null) {
             return "Failed to delete";
         }
         return houseDao.deleteHouseById(houseId);
@@ -73,11 +74,11 @@ public class HouseServiceImpl implements HouseService {
         List<Address> allAddresses = addressDao.findAllAddresses();
         try {
             for (Address allAddress : allAddresses) {
-                if (!allAddress.getRegion().equalsIgnoreCase(region)){
+                if (!allAddress.getRegion().equalsIgnoreCase(region)) {
                     throw new RuntimeException("there is no such region");
                 }
             }
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
         return houseDao.getHousesInRegion(region);
@@ -88,8 +89,8 @@ public class HouseServiceImpl implements HouseService {
         try {
             agencyDao.findAgencyById(agencyId)
                     .orElseThrow(() ->
-                            new RuntimeException("Owner with id: "+agencyId+" not found!!!"));
-        }catch (RuntimeException e){
+                            new RuntimeException("Owner with id: " + agencyId + " not found!!!"));
+        } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
         return houseDao.allHousesByAgencyId(agencyId);
@@ -100,8 +101,8 @@ public class HouseServiceImpl implements HouseService {
         try {
             ownerDao.findOwnerById(ownerId)
                     .orElseThrow(() ->
-                            new RuntimeException("Owner with id: "+ownerId+" not found!!!"));
-        }catch (RuntimeException e){
+                            new RuntimeException("Owner with id: " + ownerId + " not found!!!"));
+        } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
         return houseDao.allHousesByOwnerId(ownerId);
@@ -109,6 +110,14 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public List<House> housesBetweenDates(LocalDate fromDate, LocalDate toDate) {
-        return houseDao.housesBetweenDates(fromDate, toDate);
+        List<House> houses = houseDao.housesBetweenDates(fromDate, toDate);
+        try {
+            if (houses.isEmpty()){
+                throw new RuntimeException("houses is empty in this date");
+            }
+        }catch (RuntimeException e){
+            System.out.println(e.getMessage());
+        }
+        return houses;
     }
 }

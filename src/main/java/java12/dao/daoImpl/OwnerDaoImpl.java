@@ -10,9 +10,7 @@ import java12.entities.Owner;
 import java12.entities.RentInfo;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
     private final EntityManagerFactory entityManagerFactory = DataBaseConnection.getEntityManagerFactory();
@@ -39,7 +37,7 @@ public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             entityManager.getTransaction().begin();
-            newOwner.getHouses().add(newHouse);
+            newOwner.addHouse(newHouse);
             newHouse.setOwner(newOwner);
             entityManager.persist(newOwner);
             entityManager.persist(newHouse);
@@ -179,15 +177,16 @@ public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
     }
 
     @Override
-    public List<Owner> getOwnerOnlyNameAndAge() {
+    public Map<String, Integer> getOwnerOnlyNameAndAge() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        List<Owner> owners = new ArrayList<>();
+        Map<String, Integer> namesAndAges = new HashMap<>();
         try {
             entityManager.getTransaction().begin();
-            owners = entityManager.createQuery("select o.firstName as first_name," +
-                            " function('year', current_date()) - function('year', o.dateOfBirth) as age" +
-                            " from Owner o", Owner.class)
+            List<Owner> allOwners = entityManager.createQuery("select o from Owner o", Owner.class)
                     .getResultList();
+            for (Owner allOwner : allOwners) {
+                namesAndAges.put(allOwner.getFirstName(), LocalDate.now().getYear() - allOwner.getDateOfBirth().getYear());
+            }
             entityManager.getTransaction().commit();
         } catch (Exception e) {
             if (entityManager.getTransaction().isActive()) entityManager.getTransaction().rollback();
@@ -195,7 +194,7 @@ public class OwnerDaoImpl implements OwnerDao, AutoCloseable {
         } finally {
             entityManager.close();
         }
-        return owners;
+        return namesAndAges;
     }
 
     @Override

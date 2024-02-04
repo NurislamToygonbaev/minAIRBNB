@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,6 +40,12 @@ public class Owner extends BaseEntityId{
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+    }
+    public void addHouse(House house) {
+        if (houses == null) {
+            houses = new ArrayList<>();
+        }
+        houses.add(house);
     }
 
     @Override

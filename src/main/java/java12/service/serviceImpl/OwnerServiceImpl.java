@@ -10,6 +10,7 @@ import java12.service.OwnerService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class OwnerServiceImpl implements OwnerService {
     private final OwnerDao ownerDao = new OwnerDaoImpl();
@@ -107,7 +108,7 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public List<Owner> getOwnerOnlyNameAndAge() {
+    public Map<String, Integer> getOwnerOnlyNameAndAge() {
         return ownerDao.getOwnerOnlyNameAndAge();
     }
     private int checkEmail(Owner newOwner){

@@ -5,6 +5,7 @@ import java12.dao.RentInfoDao;
 import java12.dao.daoImpl.AgencyDaoImpl;
 import java12.dao.daoImpl.RentInfoDaoImpl;
 import java12.entities.House;
+import java12.entities.RentInfo;
 import java12.service.RentInfoService;
 
 import java.time.LocalDate;
@@ -14,19 +15,31 @@ public class RentInfoServiceImpl implements RentInfoService {
     private final RentInfoDao rentInfoDao = new RentInfoDaoImpl();
     private final AgencyDao agencyDao = new AgencyDaoImpl();
     @Override
-    public List<House> rentInfoBetweenDates(LocalDate fromDate, LocalDate toDate) {
-        return rentInfoDao.rentInfoBetweenDates(fromDate, toDate);
+    public List<RentInfo> rentInfoBetweenDates(LocalDate fromDate, LocalDate toDate) {
+        List<RentInfo> rentInfos = rentInfoDao.rentInfoBetweenDates(fromDate, toDate);
+        try {
+            if (rentInfos.isEmpty()){
+                throw new RuntimeException("is empty");
+            }
+        }catch (RuntimeException e){
+            System.out.println(e.getMessage());
+        }
+        return rentInfos;
     }
 
     @Override
-    public Integer housesByAgencyIdAndDate(Long agencyId) {
+    public String housesByAgencyIdAndDate(Long agencyId) {
         try {
             agencyDao.findAgencyById(agencyId)
                     .orElseThrow(() ->
                             new RuntimeException("Agency with id: "+agencyId+" not found!!!"));
         }catch (RuntimeException e){
-            System.out.println(e.getMessage());
+            return e.getMessage();
         }
-        return rentInfoDao.housesByAgencyIdAndDate(agencyId);
+        Long count = rentInfoDao.housesByAgencyIdAndDate(agencyId);
+        if (count <= 0){
+            return "No houses for rent";
+        }
+        return "Houses for rent: "+count;
     }
 }

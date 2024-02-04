@@ -1,10 +1,7 @@
 package java12;
 
 
-import java12.entities.Address;
-import java12.entities.Agency;
-import java12.entities.Customer;
-import java12.entities.House;
+import java12.entities.*;
 import java12.enums.FamilyStatus;
 import java12.enums.Gender;
 import java12.enums.HouseType;
@@ -50,7 +47,7 @@ public class App {
 //        System.out.println(agencyService.deleteAgencyById(scanner.nextLong()));
 
 
-        CustomerService customerService = new CustomerServiceImpl();
+//        CustomerService customerService = new CustomerServiceImpl();
 //        System.out.println(customerService.saveCustomer(new Customer(
 //                "Nurkamil", "Kamchiev", "n@gmail.com", LocalDate.of(2001, 5,19),
 //                Gender.MALE, "Kyzgyz", FamilyStatus.SINGLE
@@ -73,15 +70,53 @@ public class App {
 
 
 
-        HouseService houseService = new HouseServiceImpl();
+//        HouseService houseService = new HouseServiceImpl();
 //        System.out.println(houseService.saveHouse(1L, new House(
 //                HouseType.VIP, BigDecimal.valueOf(194232), 4, "qwert", 3, true
 //        )));
-        System.out.println(houseService.findHouseById(1L));
+//        System.out.println(houseService.findHouseById(1L));
+
+//        System.out.println(houseService.findAllHouse());
+//        System.out.println(houseService.updateHouseById(1L, new House(
+//                HouseType.APARTMENT, BigDecimal.valueOf(500000), 2,
+//                "pppp", 8, true
+//        )));
+//        System.out.println(houseService.getHousesInRegion("chuy"));
+//        System.out.println(houseService.allHousesByAgencyId(1L));
+//        System.out.println(houseService.allHousesByOwnerId(1L));
+//        System.out.println(houseService.housesBetweenDates(LocalDate.of(2025, 1, 1),
+//                LocalDate.of(2026, 1, 1)));
+
+        OwnerService ownerService = new OwnerServiceImpl();
+//        System.out.println(ownerService.saveOwner(new Owner(
+//                "owner", "ovich", "o@gmailcom", LocalDate.of(2000,1,1),
+//                Gender.MALE
+//        )));
+//        System.out.println(ownerService.saveOwner(new Owner(
+//                "qwr", "qwer", "qwer@gmail.com", LocalDate.of(1998, 9, 23),
+//                Gender.MALE
+//        ), new House(
+//                HouseType.VIP, BigDecimal.valueOf(10), 5.6, "pokoijkijn", 3,
+//                true
+//        )));
+//        System.out.println(ownerService.findOwnerById(1L));
+//        System.out.println(ownerService.findAllOwners());
+//        System.out.println(ownerService.updateOwnerById(1L, new Owner(
+//                "nur", "toi", "nur@gmail.com",
+//                LocalDate.of(1990,2,2),
+//                Gender.MALE
+//        )));
+//        System.out.println(ownerService.assignOwnerToAgency(1L, 1L));
+//        System.out.println(ownerService.getOwnersByAgencyId(1L));
+
+//        System.out.println(ownerService.getOwnerOnlyNameAndAge());
 
 
-//        OwnerService ownerService = new OwnerServiceImpl();
-//        RentInfoService rentInfoService = new RentInfoServiceImpl();
+        RentInfoService rentInfoService = new RentInfoServiceImpl();
+//        System.out.println(rentInfoService.housesByAgencyIdAndDate(10L));
+
+        System.out.println(rentInfoService.rentInfoBetweenDates(LocalDate.of(2024, 3, 2),
+                LocalDate.of(2024, 4, 1)));
 
     }
 

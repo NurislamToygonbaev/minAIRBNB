@@ -15,13 +15,14 @@ import java.util.List;
 public class RentInfoDaoImpl implements RentInfoDao, AutoCloseable {
     private final EntityManagerFactory entityManagerFactory = DataBaseConnection.getEntityManagerFactory();
     @Override
-    public List<House> rentInfoBetweenDates(LocalDate fromDate, LocalDate toDate) {
+    public List<RentInfo> rentInfoBetweenDates(LocalDate fromDate, LocalDate toDate) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        List<House> houses = new ArrayList<>();
+        List<RentInfo> houses = new ArrayList<>();
         try {
             entityManager.getTransaction().begin();
-            houses = entityManager.createQuery("select h from House h " +
-                            " where h.rentInfo.checkIn between :from and :to", House.class)
+            houses = entityManager.createQuery("select r from RentInfo r " +
+                            " where r.checkOut between :from and :to",
+                            RentInfo.class)
                     .setParameter("from", fromDate)
                     .setParameter("to", toDate)
                     .getResultList();
@@ -36,16 +37,17 @@ public class RentInfoDaoImpl implements RentInfoDao, AutoCloseable {
     }
 
     @Override
-    public Integer housesByAgencyIdAndDate(Long agencyId) {
+    public Long housesByAgencyIdAndDate(Long agencyId) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        Integer countHouse = 0;
+        Long countHouse = 0L;
         try {
             entityManager.getTransaction().begin();
 
             countHouse = entityManager.createQuery("""
-            select count(distinct r.agency.id) from RentInfo r
-            where r.agency.id =:agencyId and r.checkIn =:currentDate
-            """, Integer.class)
+            select count(r) from RentInfo r
+            where r.agency.id =:agencyId and r.checkIn <=:currentDate
+            and r.checkOut >=:currentDate
+            """, Long.class)
                     .setParameter("agencyId", agencyId)
                     .setParameter("currentDate", LocalDate.now())
                             .getSingleResult();
